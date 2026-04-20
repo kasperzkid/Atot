@@ -1,0 +1,391 @@
+/* src/pages/dashboard/hotel/HotelDashboard.css */
+
+:root {
+  --hms-bg: #FAF3EC; /* Premium Cream */
+  --hms-sidebar: #1A1A1A; /* Deep Charcoal */
+  --hms-sidebar-item: rgba(255, 255, 255, 0.05);
+  --hms-card: #FFFFFF;
+  --hms-text: #1A1A1A;
+  --hms-text-muted: #666666;
+  --hms-accent: #FF6B35; /* Ardent Orange */
+  --hms-accent-dark: #E55A2B;
+  --hms-border: #F0EBE3;
+  --hms-shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.03);
+  --hms-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+  --hms-radius-lg: 32px;
+  --hms-radius-md: 24px;
+  --hms-radius-sm: 16px;
+  
+  --status-available: #10B981;
+  --status-occupied: #FF6B35;
+  --status-cleaning: #3B82F6;
+  --status-maintenance: #EF4444;
+}
+
+.hms-root {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--hms-bg);
+  color: var(--hms-text);
+  font-family: 'DM Sans', sans-serif;
+  overflow: hidden;
+}
+
+/* ── Stable Sidebar ─────────────────────────── */
+.hms-sidebar {
+  width: 280px;
+  background: var(--hms-sidebar);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  color: white;
+  padding: 40px 24px;
+  flex-shrink: 0; /* Important: prevents shrinking */
+  transition: none; /* No hover resizing as requested */
+}
+
+.hms-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 60px;
+  padding-left: 12px;
+}
+
+.hms-sidebar-brand h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.hms-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hms-nav-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-radius: var(--hms-radius-sm);
+  font-weight: 700;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.hms-nav-item:hover {
+  background: var(--hms-sidebar-item);
+  color: white;
+}
+
+.hms-nav-item.active {
+  background: var(--hms-accent);
+  color: white;
+  box-shadow: 0 10px 25px rgba(255, 107, 53, 0.3);
+}
+
+.hms-sidebar-footer {
+  margin-top: auto;
+  padding-top: 40px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ── Main Area ──────────────────────────────── */
+.hms-main {
+  flex: 1;
+  padding: 60px 80px;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.hms-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 60px;
+}
+
+.hms-header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 48px;
+  font-weight: 800;
+  color: var(--hms-text);
+  margin-bottom: 8px;
+  line-height: 1;
+}
+
+.hms-header p {
+  color: var(--hms-text-muted);
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ── Stats Grid ────────────────────────────── */
+.hms-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+  margin-bottom: 60px;
+}
+
+.hms-stat-card {
+  background: var(--hms-card);
+  padding: 32px;
+  border-radius: var(--hms-radius-md);
+  box-shadow: var(--hms-shadow-sm);
+  border: 1px solid var(--hms-border);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hms-stat-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--hms-shadow);
+}
+
+.hms-stat-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px;
+  height: 100px;
+  background: currentColor;
+  opacity: 0.03;
+  border-radius: 50%;
+  transform: translate(30%, -30%);
+}
+
+.hms-stat-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 20px -5px currentColor;
+}
+
+.hms-stat-info h3 {
+  font-size: 42px;
+  font-weight: 800;
+  color: var(--hms-text);
+  margin: 0;
+  line-height: 1;
+}
+
+.hms-stat-info p {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--hms-text-muted);
+  margin-top: 12px;
+}
+
+/* ── Operations Board ───────────────────────── */
+.hms-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+
+.hms-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.hms-column-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--hms-border);
+  margin-bottom: 8px;
+}
+
+.hms-column-title {
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--hms-text-muted);
+}
+
+.hms-res-card {
+  background: var(--hms-card);
+  border-radius: var(--hms-radius-md);
+  padding: 32px;
+  box-shadow: var(--hms-shadow-sm);
+  border: 1px solid var(--hms-border);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.hms-res-card:hover {
+  transform: scale(1.02);
+  box-shadow: var(--hms-shadow);
+  border-color: var(--hms-accent);
+}
+
+.hms-res-card h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--hms-text);
+}
+
+.hms-res-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hms-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--hms-text-muted);
+}
+
+.hms-res-footer {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--hms-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ── Room Inventory Grid ────────────────────── */
+.hms-room-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 32px;
+}
+
+.hms-room-card {
+  background: var(--hms-card);
+  border-radius: var(--hms-radius-md);
+  padding: 40px 32px;
+  box-shadow: var(--hms-shadow-sm);
+  border: 1px solid var(--hms-border);
+  transition: all 0.3s ease;
+  text-align: center;
+  position: relative;
+}
+
+.hms-room-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--hms-shadow);
+}
+
+.hms-room-card.status-available { border-top: 6px solid var(--status-available); }
+.hms-room-card.status-occupied { border-top: 6px solid var(--status-occupied); }
+.hms-room-card.status-cleaning { border-top: 6px solid var(--status-cleaning); }
+.hms-room-card.status-maintenance { border-top: 6px solid var(--status-maintenance); }
+
+.hms-room-card h4 {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 36px;
+  letter-spacing: 0.1em;
+  color: var(--hms-text);
+  margin-bottom: 4px;
+}
+
+.hms-room-card .type {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--hms-text-muted);
+  margin-bottom: 32px;
+}
+
+.hms-room-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.hms-action-btn {
+  padding: 8px 0;
+  border-radius: 8px;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  border: 1px solid var(--hms-border);
+  background: white;
+  color: var(--hms-text-muted);
+  transition: all 0.2s ease;
+}
+
+.hms-action-btn:hover {
+  border-color: var(--hms-accent);
+  color: var(--hms-accent);
+}
+
+/* ── Calendar Table ─────────────────────────── */
+.hms-calendar-wrapper {
+  background: var(--hms-card);
+  border-radius: var(--hms-radius-lg);
+  padding: 40px;
+  box-shadow: var(--hms-shadow);
+  border: 1px solid var(--hms-border);
+}
+
+.hms-calendar-table th {
+  padding: 20px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--hms-text-muted);
+}
+
+.hms-calendar-day.today {
+  color: var(--hms-accent);
+}
+
+.hms-calendar-day .date {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--hms-text);
+  display: block;
+  margin-top: 4px;
+}
+
+/* ── Custom Animations ──────────────────────── */
+@keyframes fadeInSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-premium {
+  animation: fadeInSlideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}

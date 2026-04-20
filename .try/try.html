@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chapa Test</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+    h1 { font-size: 20px; margin-bottom: 24px; color: #111; }
+    label { font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 4px; }
+    input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: #FF6B35; }
+    button {
+      width: 100%;
+      padding: 13px;
+      background: #FF6B35;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: background 0.2s;
+    }
+    button:hover { background: #e55a24; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    .log {
+      margin-top: 24px;
+      background: #1a1a1a;
+      color: #eee;
+      border-radius: 10px;
+      padding: 16px;
+      font-size: 12px;
+      font-family: monospace;
+      max-height: 320px;
+      overflow-y: auto;
+      display: none;
+    }
+    .log.visible { display: block; }
+    .log-line { margin-bottom: 6px; line-height: 1.5; }
+    .log-line.ok  { color: #4ade80; }
+    .log-line.err { color: #f87171; }
+    .log-line.info { color: #60a5fa; }
+    .log-line.warn { color: #fbbf24; }
+    hr { border: none; border-top: 1px solid #eee; margin: 20px 0; }
+    .note { font-size: 12px; color: #999; margin-top: 8px; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h1>🔶 Chapa Payment Test</h1>
+
+  <label>Secret Key</label>
+  <input id="secretKey" type="text" placeholder="CHASECK_TEST-..." value="CHASECK_TEST-gS6YdY5T57lo0xT4ze6W4nxFyM3SicT5" />
+
+  <label>Amount (ETB)</label>
+  <input id="amount" type="number" value="10" min="1" />
+
+  <label>First Name</label>
+  <input id="firstName" type="text" value="Israel" />
+
+  <label>Last Name</label>
+  <input id="lastName" type="text" value="Goytom" />
+
+  <label>Email</label>
+  <input id="email" type="email" value="israel@gmail.com" />
+
+  <hr />
+
+  <button id="btn" onclick="runTest()">🚀 Initialize & Redirect to Chapa</button>
+  <p class="note">Opens Chapa checkout in a new tab so you can see what happens.</p>
+
+  <div class="log" id="log"></div>
+</div>
+
+<script>
+  const logEl = document.getElementById('log');
+
+  function log(msg, type = 'info') {
+    logEl.classList.add('visible');
+    const line = document.createElement('div');
+    line.className = `log-line ${type}`;
+    const time = new Date().toLocaleTimeString();
+    line.textContent = `[${time}] ${msg}`;
+    logEl.appendChild(line);
+    logEl.scrollTop = logEl.scrollHeight;
+    console.log(msg);
+  }
+
+  async function runTest() {
+    const btn = document.getElementById('btn');
+    btn.disabled = true;
+    btn.textContent = 'Testing...';
+    logEl.innerHTML = '';
+
+    const secretKey = document.getElementById('secretKey').value.trim();
+    const amount    = document.getElementById('amount').value.trim();
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName  = document.getElementById('lastName').value.trim();
+    const email     = document.getElementById('email').value.trim();
+
+    // ── Step 1: Validate inputs ──────────────────────────────────────────
+    log('Step 1: Validating inputs...', 'info');
+
+    if (!secretKey.startsWith('CHASECK')) {
+      log('❌ Secret key looks wrong — should start with CHASECK_TEST- or CHASECK-', 'err');
+      btn.disabled = false; btn.textContent = '🚀 Initialize & Redirect to Chapa';
+      return;
+    }
+    log(`✅ Secret key prefix OK: ${secretKey.slice(0, 18)}...`, 'ok');
+    log(`✅ Amount: ${amount} ETB`, 'ok');
+    log(`✅ Customer: ${firstName} ${lastName} <${email}>`, 'ok');
+
+    // ── Step 2: Build payload ────────────────────────────────────────────
+    const tx_ref = `TEST-${Date.now()}-${Math.random().toString(36).slice(2,6).toUpperCase()}`;
+    const payload = {
+      amount,
+      currency: 'ETB',
+      email,
+      first_name: firstName,
+      last_name: lastName,
+      tx_ref,
+      return_url: window.location.href,
+    };
+
+    log(`Step 2: Payload built — tx_ref: ${tx_ref}`, 'info');
+    log(`📦 Payload: ${JSON.stringify(payload)}`, 'info');
+
+    // ── Step 3: Call Chapa initialize API ────────────────────────────────
+    log('Step 3: Calling Chapa API (https://api.chapa.co/v1/transaction/initialize)...', 'info');
+    log('⚠️  Note: This will likely be blocked by CORS in the browser.', 'warn');
+    log('⚠️  If CORS error → your code needs a backend proxy (Vite proxy, Supabase fn, etc)', 'warn');
+
+    let response, data;
+    try {
+      response = await fetch('https://api.chapa.co/v1/transaction/initialize', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${secretKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+    } catch (fetchErr) {
+      log(`❌ FETCH ERROR: ${fetchErr.message}`, 'err');
+      log('👉 This is a CORS block. Use a proxy (/api/chapa-init in vite.config.ts).', 'warn');
+      log('👉 Your secret key and payload are fine — this is a browser restriction.', 'warn');
+      btn.disabled = false; btn.textContent = '🚀 Initialize & Redirect to Chapa';
+      return;
+    }
+
+    log(`📡 HTTP Status: ${response.status} ${response.statusText}`, response.ok ? 'ok' : 'err');
+
+    try {
+      data = await response.json();
+      log(`📩 Response: ${JSON.stringify(data)}`, 'info');
+    } catch (e) {
+      log(`❌ Could not parse response JSON: ${e.message}`, 'err');
+      btn.disabled = false; btn.textContent = '🚀 Initialize & Redirect to Chapa';
+      return;
+    }
+
+    // ── Step 4: Check response ───────────────────────────────────────────
+    log('Step 4: Checking response...', 'info');
+
+    if (data.status !== 'success') {
+      log(`❌ Chapa returned status: "${data.status}"`, 'err');
+      log(`❌ Message: ${JSON.stringify(data.message)}`, 'err');
+      btn.disabled = false; btn.textContent = '🚀 Initialize & Redirect to Chapa';
+      return;
+    }
+
+    if (!data.data?.checkout_url) {
+      log('❌ No checkout_url in response — Chapa account issue.', 'err');
+      btn.disabled = false; btn.textContent = '🚀 Initialize & Redirect to Chapa';
+      return;
+    }
+
+    const url = data.data.checkout_url;
+    log(`✅ Got checkout_url: ${url}`, 'ok');
+
+    // ── Step 5: Open checkout ────────────────────────────────────────────
+    log('Step 5: Opening Chapa checkout in new tab...', 'info');
+    log('👀 Watch the new tab — if it crashes, the bug is on Chapa\'s side.', 'warn');
+
+    window.open(url, '_blank');
+    log('✅ Done! Check the new tab.', 'ok');
+
+    btn.disabled = false;
+    btn.textContent = '🚀 Initialize & Redirect to Chapa';
+  }
+</script>
+</body>
+</html>
